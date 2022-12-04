@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <metadata charset="utf-8">
+    <title>EmojiLang 🚑</title>
+    <script src="util.js"></script>
+    <script src="tokenizer.js"></script>
+    <script src="parser.js"></script>
+    <script src="interpreter.js"></script>
+    <script src="ide.js"></script>
+    <style>
+      h1 { margin: 0; padding: 0; }
+      body { margin: 0; padding: 0; font-family: sans-serif; }
+      .explainer ul { list-style-type: none; margin: 0; padding: 0; }
+      .explainer ul li { margin: 10px; padding: 0; }
+    </style>
+    <script>
+      window.addEventListener('load', IDE.init);
+    </script>
+  </head>
+  <body>
+    <div style="position: absolute; width: 100%; height: 100px; background-color: #ff0">
+      <h1>Emoji Lang 🚑</h1>
+      <button id="run-btn">Run</button>
+    </div>
+    <div class="explainer" style="position: absolute; width: 350px; right: 0; top: 100px; bottom: 0; background-color: #f0f; overflow-y: auto">
+      <h2>Syntax key</h2>
+      <ul class="explainer">
+      <li>🤸‍♂️name🚦body🙍‍♂️ - function definition</li>
+      <li>🤬argName🗄️ - argument name</li>
+      <li>🎭expression🏁 - expression as a statement</li>
+      <li>📢var name⬅️value🗄️ - variable assignment</li>
+      <li>🎠condition🎱code🐴 - while loop</li>
+      <li>📦func name⚪arg1⚪arg2⚪etc🏁 - built-in function</li>
+      <li>👉func name⚪arg1⚪arg2⚪etc🏁 - user-def function</li>
+      <li>🤮value😷 - return</li>
+      <li>🤷‍♂️condition🎱code🤦‍♂️ - if statement</li>
+      <li>🤷‍♂️condition🎱code🙅‍♂️code🤦‍♂️ - if/else statement</li>
+      <li>⚖️ conditional: equal</li>
+      <li>👇 conditional: less than</li>
+      <li>👇⚖️ conditional: less than or equal</li>
+      <li>👆 conditional: greater than</li>
+      <li>👆⚖️ conditional: greater than or equal</li>
+      <li>🙃⚖️ conditional: not equal</li>
+      <li>🙃 boolean not operator</li>
+      <li>➕ ➖ ✖️ ➗ four basic operators</li>
+      <li>0️⃣1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣digits for num values</li>
+      <li>⏺ decimal for float values</li>
+      <li>🧶value✂️ - string value containing emoji-free text (standard escape sequences apply)</li>
+      <li>🧵✂️ - string value containing emojis</li>
+      <li>✂️ - the scissor emoji as a string</li>
+      <li>▶️ - reserved function name for the start of execution (the main function)</li>
+      </ul>
+    </div>
+    <div style="position: absolute; top: 100px; bottom: 0px; left: 0px; right: 350px;">
+      <div style="position: absolute; width: 100%; height: 60%;">
+        <textarea id="editor" style="width: 100%; height: 100%; box-sizing: border-box; padding: 4px; margin: 0; outline: none; resize: none; border: none;"></textarea>
+      </div>
+      <div style="position: absolute; width: 100%; height: 40%; bottom: 0; background-color: #eee;">
+        output
+      </div>
+    </div>
+  </body>
+</html>
