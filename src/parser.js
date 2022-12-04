@@ -37,12 +37,11 @@ const Parser = (() => {
 
   let parseLine = (tokens) => {
     tokens.ensureMore();
-    if (tokens.isNext("🎭")) return parseExpressionAsExec(tokens);
     if (tokens.isNext("📢")) return parseAssignment(tokens);
     if (tokens.isNext("🤷‍♂️")) return parseConditional(tokens);
     if (tokens.isNext("🎠")) return parseWhileLoop(tokens);
     if (tokens.isNext("🤮")) return parseReturn(tokens);
-    Util.throwParseError(tokens.peek(), "Unexpected value: " + tokens.peekValue());
+    return parseExpressionAsExec(tokens)
   };
 
   let parseReturn = (tokens) => {
@@ -100,11 +99,9 @@ const Parser = (() => {
   };
 
   let parseExpressionAsExec = (tokens) => {
-    let firstToken = tokens.popExpected("🎭");
     let expr = parseExpression(tokens);
-    tokens.popExpected("🏁");
     return {
-      firstToken,
+      firstToken: expr.firstToken,
       type: 'EXPR',
       expression: expr,
     };
@@ -331,7 +328,7 @@ const Parser = (() => {
         args,
       };
     }
-    
+
     let emojiVar = tokens.popEmoji();
     return {
       firstToken,
