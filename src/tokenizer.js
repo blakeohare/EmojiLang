@@ -18,15 +18,17 @@ const Tokens = (() => {
   const GENDER_FEMALE = 0x2642;
   const GENDER_MALE_STR = String.fromCharCode(GENDER_MALE);
   const GENDER_FEMALE_STR = String.fromCharCode(GENDER_FEMALE);
+  const ASCII_0 = '0'.charCodeAt(0);
+  const ASCII_9 = ASCII_0 + 9;
+  const NUMBER_BOX = 0x20e3;
 
   let isEmojiString = (str) => {
     let a = str[0].codePointAt(0);
     let b = str.length === 1 ? 0 : str[1].codePointAt(0);
-    if (a >= 0x2000 && a <= 0x3300 && b === 0) return true;
+    if (a >= 0x2000 && a <= 0x3300) return true;
     if (a >= 0xD83C && a <= 0xD83E && b >= 0xD000 && b <= 0xDFFF) return true;
     if (a === 0xA9 && b === 0) return true;
     if (a === 0xAE && b === 0) return true;
-    if ((a === 0x2640 || a === 0x2642) && b === 0) return true;
     return false;
   };
 
@@ -35,6 +37,9 @@ const Tokens = (() => {
   }
 
   let canonicalizeEmoji = (v, ignoreGender) => {
+    let charCode = v.codePointAt(0);
+    if (charCode >= ASCII_0 && charCode <= ASCII_9) return v; // leave number blocks alone!
+
     let parts = unicodeSplit(v)
       .filter(str => !isVariationSelector(str.codePointAt(0)) && !SKIN_TONE_CHARS.has(str));
     if (ignoreGender) {
@@ -110,6 +115,19 @@ const Tokens = (() => {
               value: scissorEmoji,
               literalValue: scissorEmoji,
             });
+          } else if (cp >= ASCII_0 && cp <= ASCII_9 && 
+              i + 1 < chars.length && isVariationSelector(chars[i + 1].codePointAt(0)) &&
+              i + 2 < chars.length && chars[i + 2].codePointAt(0) === NUMBER_BOX) {
+            // This is the boxed number emojis. They use the ASCII number as the root character.
+            let numChar = chars.slice(i, i + 3).join("")
+            tokens.push({
+              type: 'EMOJI',
+              line: lines[i],
+              col: cols[i],
+              value: numChar,
+              literalValue: numChar,
+            });
+            i += 2;
           } else {
             return { error: true, line: lines[i], col: cols[i], message: "Unexpected character: " + c };
           }
@@ -138,7 +156,7 @@ const Tokens = (() => {
             let value = canonicalizeEmoji(emojiBuilder.join(""));
             tokens.push({
               type: 'EMOJI',
-              lines: lines[tokenStart],
+              line: lines[tokenStart],
               col: cols[tokenStart],
               value: value,
               literalValue: value,
@@ -238,6 +256,12 @@ const Tokens = (() => {
           throw Util.throwParseError(next, "Unexpected token. Expected " + v + " but found " + nextValue + " instead.");
         }
         return next;
+      };
+
+      tokenStream.popValue = () => {
+        let token = tokenStream.pop();
+        if (token) return token.value;
+        return null;
       };
 
       return tokenStream;

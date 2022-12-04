@@ -22,6 +22,10 @@ const Interpreter = (() => {
     return { type: 'I', internalValue: n };
   };
 
+  let getFloat = (v) => {
+    return { type: 'F', internalValue: v };
+  };
+
   let getString = (s) => {
     if (s.length <= 1) {
       let str = COMMON_STRINGS[s];
@@ -87,6 +91,8 @@ const Interpreter = (() => {
     let instruction = null;
     let funcDef = null;
     let value = null;
+    let value2 = null;
+    let result = null;
 
     let functionLookup = {};
 
@@ -99,8 +105,20 @@ const Interpreter = (() => {
       instruction = byteCode[frame.pc];
       switch (instruction.op) {
 
+        case 'ASSIGN-VAR': 
+          frame.locals[instruction.name] = frame.values.pop();
+          break;
+
+        case 'FLOAT':
+          frame.values.push(getFloat(instruction.value));
+          break;
+
         case 'FUNCTION_DEF':
           functionLookup[instruction.name] = { pc: frame.pc + 1, argc: instruction.argc };
+          break;
+
+        case 'INTEGER':
+          frame.values.push(getInt(instruction.value));
           break;
 
         case 'INVOKE':
@@ -148,8 +166,37 @@ const Interpreter = (() => {
           frame.values.push(NULL);
           break;
 
+        case 'OP':
+          value2 = frame.values.pop();
+          value = frame.values.pop();
+          switch (value.type + instruction.opop + value2.type) {
+            case "I➕I": result = getInt(value.internalValue + value2.internalValue); break;
+            case "I➕F": result = getFloat(value.internalValue + value2.internalValue); break;
+            case "F➕I": result = getFloat(value.internalValue + value2.internalValue); break;
+            case "F➕F": result = getFloat(value.internalValue + value2.internalValue); break;
+            case "I➖I": result = getInt(value.internalValue - value2.internalValue); break;
+            case "I➖F": result = getFloat(value.internalValue - value2.internalValue); break;
+            case "F➖I": result = getFloat(value.internalValue - value2.internalValue); break;
+            case "F➖F": result = getFloat(value.internalValue - value2.internalValue); break;
+            case "I✖I": result = getInt(value.internalValue * value2.internalValue); break;
+            case "I✖F": result = getFloat(value.internalValue * value2.internalValue); break;
+            case "F✖I": result = getFloat(value.internalValue * value2.internalValue); break;
+            case "F✖F": result = getFloat(value.internalValue * value2.internalValue); break;
+            case "I➗I": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getInt(Math.floor(value.internalValue / value2.internalValue)); break;
+            case "I➗F": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
+            case "F➗I": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
+            case "F➗F": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
+            default: return errorResult(instruction.token, "Operator not defined for " + value.type + instruction.opop + value2.type);
+          }
+          frame.values.push(result);
+          break;
+
         case 'POP':
           frame.values.pop();
+          break;
+
+        case 'POP_ARG':
+          frame.locals[instruction.name] = frame.args.pop();
           break;
 
         case 'RETURN':
@@ -171,6 +218,12 @@ const Interpreter = (() => {
             }
             frame.values.push(s);
           }
+          break;
+
+        case 'VAR':
+          value = frame.locals[instruction.name];
+          if (!value) return errorResult(instruction.token, "Variable is not defined: " + instruction.name);
+          frame.values.push(value);
           break;
 
         default: 

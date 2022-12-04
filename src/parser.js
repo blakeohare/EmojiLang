@@ -289,10 +289,9 @@ const Parser = (() => {
     if (nums[tokens.peekValue()] !== undefined) {
       let sb = [];
       while (nums[tokens.peekValue()] !== undefined) {
-        sb.push(tokens.popValue());
+        sb.push(nums[tokens.popValue()]);
       }
       let numValueStr = sb.join("");
-      let actualValue = NaN;
       if (numValueStr.indexOf(".") !== -1) {
         let floatValue = parseFloat(numValueStr);
         if (isNaN(floatValue)) throw Util.throwParseError(firstToken, "Invalid float value: " + numValueStr);

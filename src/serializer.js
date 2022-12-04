@@ -44,7 +44,7 @@ const Serializer = (() => {
 
     for (let i = 0; i < funcDef.args.length; i++) {
       let arg = funcDef.args[i];
-      innerBuffer.push({ op: 'POP_ARG', name: arg[i] });
+      innerBuffer.push({ op: 'POP_ARG', name: arg });
     }
 
     for (let i = 0; i < funcDef.code.length; i++) {
@@ -170,6 +170,10 @@ const Serializer = (() => {
     serializeExpression(buffer, arrIndex.root);
     serializeExpression(buffer, arrIndex.index);
     buffer.push({ op: 'ARRAY_INDEX', token: arrIndex.indexToken });
+  };
+
+  let serializeVariable = (buffer, varRef) => {
+    buffer.push({ op: 'VAR', token: varRef.firstToken, name: varRef.name });
   };
 
   let serializeOps = (buffer, opChain) => {
