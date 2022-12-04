@@ -106,8 +106,9 @@ const Interpreter = (() => {
     let functionLookup = {};
 
     let lastBreak = now();
-    let checkBreak = false;
     let args = [];
+
+    let prevPc = -1;
 
     while (stack.length) {
       frame = stack[stack.length - 1];
@@ -265,14 +266,15 @@ const Interpreter = (() => {
 
       frame.pc++;
 
-      if (checkBreak) {
+      if (frame.pc < prevPc) {
         // Every 5 milliseconds, yield 3 milliseconds to the event loop to prevent the browser from hanging from infinite loops
+        // Perform this check anytime the PC goes backwards.
         if (now() - lastBreak > 0.005) {
           await pause(0.003);
           lastBreak = now();
         }
-        checkBreak = false;
       }
+      prevPc = frame.pc;
     }
   };
 
