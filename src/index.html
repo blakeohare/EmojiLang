@@ -13,19 +13,56 @@
     <style>
       h1 { margin: 0; padding: 0; }
       body { margin: 0; padding: 0; font-family: sans-serif; }
-      .explainer ul { list-style-type: none; margin: 0; padding: 0; }
-      .explainer ul li { margin: 10px; padding: 0; }
+      .nav-header {
+        position: absolute;
+        width: 100%;
+        height: 100px;
+        background-color: #444;
+        color: #fff;
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      .nav-header a:link, .nav-header a:visited {
+        color: #8af;
+        text-decoration: none;
+      }
+      .nav-header a:hover {
+        color: #adf;
+        text-decoration: underline;
+      }
+      .explainer { 
+        position: absolute; 
+        width: 350px; 
+        right: 0; 
+        top: 100px; 
+        bottom: 0; 
+        background-color: #aaa;
+        overflow-y: auto
+      }
+      .explainer ul { 
+        list-style-type: none; 
+        margin: 0; 
+        padding: 0; 
+      }
+      .explainer ul li { 
+        margin: 10px; 
+        padding: 0; 
+      }
     </style>
     <script>
       window.addEventListener('load', IDE.init);
     </script>
   </head>
   <body>
-    <div style="position: absolute; width: 100%; height: 100px; background-color: #ff0">
-      <h1>Emoji Lang 🚑</h1>
-      <button id="run-btn">Run</button>
+    <div class="nav-header">
+      <h1>Emoji Lang <span id="title-icon"></span></h1>
+      <button id="run-btn">🏃‍♂️ Run</button> | 
+      <a href="https://github.com/blakeohare/EmojiLang">Source Code</a> | 
+      <a href="https://github.com/blakeohare/EmojiLang/blob/main/Tutorial.md">Tutorial</a> | 
+      <a href="https://github.com/blakeohare/EmojiLang/blob/main/samples/README.md">Samples</a> | 
+      Created by <a href="https://blakeohare.com">Blake O'Hare</a>
     </div>
-    <div class="explainer" style="position: absolute; width: 350px; right: 0; top: 100px; bottom: 0; background-color: #f0f; overflow-y: auto">
+    <div class="explainer">
       <h2>Syntax Palette 🎨</h2>
       <ul id="explainer">
       </ul>

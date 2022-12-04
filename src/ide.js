@@ -58,6 +58,26 @@ const IDE = (() => {
       li.append(' ', item.label);
       explainerHost.append(li);
     }
+    updateIcon();
+    setInterval(updateIcon, 12 * 1000);
+  };
+
+  let allEmojis = null;
+  let updateIcon = () => {
+    let host = document.getElementById('title-icon');
+    if (!allEmojis) {
+      allEmojis = [];
+      // anything used for sexual innuendo, religious, or just kind of weird as the first impression
+      // are ommitted from the title roulette.
+      let notThese = new Set("🍆 🍑 🦪 🌽 ⛪ 🕋 🕌 🛕 🕍 🏩 🚬".split(" "));
+      for (let pb of paletteButtons) {
+        if (pb.btn) allEmojis.push(pb.btn);
+        else allEmojis.push(...pb.buttons);
+      }
+      allEmojis = allEmojis.filter(e => !notThese.has(e));
+    }
+    let emoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
+    host.innerText = emoji;
   };
 
   let paletteButtons = [
