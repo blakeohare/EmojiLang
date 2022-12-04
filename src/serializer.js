@@ -11,6 +11,10 @@ const Serializer = (() => {
       name: Tokens.canonicalizeEmoji("▶️"),
       argc: 0,
     });
+
+    buffer.push({ op: 'RETURN' });
+
+    return buffer;
   };
 
   let serializeFunctionInvocation = (buffer, invocation) => {
@@ -19,8 +23,8 @@ const Serializer = (() => {
       serializeExpression(buffer, arg);
     }
     buffer.push({
-      token: invocation.firstToken,
       op: 'INVOKE',
+      token: invocation.firstToken,
       argc: invocation.args.length,
       name: invocation.name,
       isBuiltIn: invocation.isBuiltIn,
@@ -30,8 +34,10 @@ const Serializer = (() => {
   let serializeFunctionDefinition = (buffer, funcDef) => {
     
     buffer.push({
+      op: 'FUNCTION_DEF',
       token: funcDef.firstToken,
       name: funcDef.name,
+      argc: funcDef.args.length,
     });
 
     let innerBuffer = [];

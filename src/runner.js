@@ -12,7 +12,7 @@ const Runner = (() => {
     if (tokens.error) return tokens;
     let bundle = Parser.parse(tokens);
     let byteCode = Serializer.encodeToByteCode(Object.values(bundle.functionsByName));
-    return Interpreter.interpret(byteCode).then(() => { true });
+    return Interpreter.interpret(byteCode);
   };
   return Object.freeze({
     run,

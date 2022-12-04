@@ -11,10 +11,15 @@ const Util = (() => {
       sb.push("Line ", item.line, ", Column ", item.col, ": ");
     }
     sb.push(msg);
-    
+
     throw new Error(sb.join(""));
   };
+
+  let plural = (n, singular, plural) => {
+    return n + " " + (n === 1 ? singular : plural);
+  };
   return Object.freeze({
+    plural,
     throwParseError,
   });
 })();
