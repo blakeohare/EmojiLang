@@ -80,7 +80,11 @@ const Interpreter = (() => {
     "🖨️": {
       handler: (msg) => { console.log(toString(msg)); }, // TODO: use the IDE logger
       argc: 1,
-    }
+    },
+    "🎲": {
+      handler: () => getFloat(Math.random()),
+      argc: 0,
+    },
   };
   let builtinLookup = {};
   Object.keys(builtinLookupUncanonicalized).forEach(k => {
@@ -119,6 +123,10 @@ const Interpreter = (() => {
           frame.locals[instruction.name] = frame.values.pop();
           break;
 
+        case 'BOOLEAN':
+          frame.values.push(instruction.value ? TRUE : FALSE);
+          break;
+
         case 'FLOAT':
           frame.values.push(getFloat(instruction.value));
           break;
@@ -134,10 +142,13 @@ const Interpreter = (() => {
         case 'INVOKE':
           if (instruction.isBuiltIn) {
             funcDef = builtinLookup[instruction.name];
+            if (!funcDef) {
+              return errorResult(instruction.token, "No built-in function named " + instruction.name);
+            }
           } else {
             funcDef = functionLookup[instruction.name];
             if (!funcDef) {
-              return errorResult(instruction.token, "Now function defined by the name of " + instruction.name);
+              return errorResult(instruction.token, "No function defined by the name of " + instruction.name);
             }
             newFrame = createStackFrame(funcDef.pc);
           }

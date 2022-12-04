@@ -97,12 +97,12 @@ const Parser = (() => {
     let trueCode = [];
     let falseCode = [];
     while (!tokens.isNext("🙅‍♂️", true) && !tokens.isNext("🤦‍♂️", true)) {
-      trueCode.push(parseStatement(tokens));
+      trueCode.push(parseLine(tokens));
     }
 
     if (tokens.popIfPresent("🙅‍♂️", true)) {
       while (!tokens.isNext("🤦‍♂️", true)) {
-        falseCode.push(parseStatement(tokens));
+        falseCode.push(parseLine(tokens));
       }
     }
     tokens.popExpected("🤦‍♂️", true);
@@ -315,7 +315,7 @@ const Parser = (() => {
       return { 
         firstToken,
         type: 'BOOL',
-        value: firstToken.value === "☂️",
+        value: firstToken.value !== "🌂",
       };
     }
 
