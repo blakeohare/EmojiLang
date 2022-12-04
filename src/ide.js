@@ -16,6 +16,8 @@ const IDE = (() => {
     editorUi.addEventListener('keydown', applyEditorChanges);
 
     document.getElementById('run-btn').addEventListener('click', () => {
+      let oc = document.getElementById('output-console');
+      Util.clearChildren(oc);
       Runner.run(code);
     });
 
@@ -78,6 +80,21 @@ const IDE = (() => {
     }
     let emoji = allEmojis[Math.floor(Math.random() * allEmojis.length)];
     host.innerText = emoji;
+  };
+
+  let emitToConsole = (msg, isError) => {
+    let oc = document.getElementById('output-console');
+    if (oc.children.length > 300) {
+      oc.removeChild(oc.firstChild);
+    }
+    let wrapper = document.createElement('div');
+    wrapper.innerText = msg;
+    if (isError) {
+      wrapper.style.backgroundColor = '#f8b';
+    }
+    wrapper.style.borderBottom = '1px solid #aaa';
+    oc.append(wrapper);
+    oc.scrollTop = oc.scrollHeight;
   };
 
   let paletteButtons = [
@@ -280,5 +297,6 @@ const IDE = (() => {
 
   return Object.freeze({
     init,
+    emitToConsole,
   });
 })();

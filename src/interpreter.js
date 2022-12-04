@@ -78,7 +78,9 @@ const Interpreter = (() => {
 
   let builtinLookupUncanonicalized = {
     "🖨️": {
-      handler: (msg) => { console.log(toString(msg)); }, // TODO: use the IDE logger
+      handler: (msg) => { 
+        IDE.emitToConsole(toString(msg));
+      },
       argc: 1,
     },
     "🎲": {

@@ -18,7 +18,15 @@ const Util = (() => {
   let plural = (n, singular, plural) => {
     return n + " " + (n === 1 ? singular : plural);
   };
+
+  let clearChildren = (e) => {
+    while (e.firstChild) {
+      e.removeChild(e.firstChild);
+    }
+  };
+
   return Object.freeze({
+    clearChildren,
     plural,
     throwParseError,
   });

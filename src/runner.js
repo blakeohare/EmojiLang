@@ -3,7 +3,7 @@ const Runner = (() => {
   let run = async (code) => {
     let result = await runImpl(code);
     if (result.error) {
-      console.error("ERROR!", result);
+      IDE.emitToConsole(result.message, true);
     }
   }
 
