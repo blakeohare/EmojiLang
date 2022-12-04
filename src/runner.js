@@ -10,7 +10,6 @@ const Runner = (() => {
   let runImpl = async (code) => {
     let tokens = Tokens.tokenize(code);
     if (tokens.error) return tokens;
-    return;
     let bundle = Parser.parse(tokens);
     return Interpreter.interpret(bundle).then(() => { true });
   };
