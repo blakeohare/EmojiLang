@@ -206,7 +206,7 @@ const Interpreter = (() => {
               case "#👆⚖#": result = getBool(leftValue >= rightValue); break;
               default: 
                 if (instruction.opop === "➕" && (leftType === 'S' || rightType === 'S')) {
-                  result = getString(toString(leftValue) + toString(rightValue));
+                  result = getString(toString(value) + toString(value2));
                 } else {
                   return errorResult(instruction.token, "Operator not defined for " + value.type + instruction.opop + value2.type);
                 }
@@ -218,6 +218,14 @@ const Interpreter = (() => {
 
         case 'POP':
           frame.values.pop();
+          break;
+
+        case 'POP_AND_JUMP_IF_FALSE':
+          value = frame.values.pop();
+          if (value.type !== 'B') return errorResult(instruction.token, "A 🎠 loop expects a boolean condition");
+          if (!value.internalValue) {
+            frame.pc += instruction.offset;
+          }
           break;
 
         case 'POP_ARG':
