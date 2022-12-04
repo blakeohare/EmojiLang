@@ -11,7 +11,8 @@ const Runner = (() => {
     let tokens = Tokens.tokenize(code);
     if (tokens.error) return tokens;
     let bundle = Parser.parse(tokens);
-    return Interpreter.interpret(bundle).then(() => { true });
+    let byteCode = Serializer.encodeToByteCode(Object.values(bundle.functionsByName));
+    return Interpreter.interpret(byteCode).then(() => { true });
   };
   return Object.freeze({
     run,

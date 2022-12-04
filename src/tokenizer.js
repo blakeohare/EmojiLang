@@ -251,5 +251,6 @@ const Tokens = (() => {
   return Object.freeze({
     tokenize,
     emojiCompare,
+    canonicalizeEmoji,
   });
 })();

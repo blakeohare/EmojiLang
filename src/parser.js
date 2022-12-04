@@ -44,6 +44,23 @@ const Parser = (() => {
     return parseExpressionAsExec(tokens)
   };
 
+  let parseWhileLoop = (tokens) => {
+    let firstToken = tokens.popExpected("🎠");
+    let condition = parseExpression(tokens);
+    tokens.popExpected("🎱");
+    let code = [];
+    while (!tokens.popIfPresent("🐴")) {
+      code.push(parseLine(tokens));
+    }
+
+    return {
+      firstToken,
+      type: 'LOOP',
+      condition,
+      code,
+    };
+  };
+
   let parseReturn = (tokens) => {
     let firstToken = tokens.popExpected("🤮");
     let expr = parseExpression(tokens);
@@ -220,6 +237,7 @@ const Parser = (() => {
         root = {
           firstToken: root.firstToken,
           type: 'KEY',
+          root,
           keyToken: keyOp,
           key: keyExpr,
         };
@@ -230,6 +248,7 @@ const Parser = (() => {
         root = {
           firstToken: root.firstToken,
           type: 'INDEX',
+          root,
           indexToken: indexOp,
           index: indexExpr,
         };
