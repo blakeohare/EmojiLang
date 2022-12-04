@@ -15,6 +15,7 @@ const Interpreter = (() => {
   COMMON_STRINGS[""] = EMPTY_STRING;
   
   let getInt = (n) => {
+    n = Math.floor(n);
     if (n >= -1000 && n <= 1000) {
       if (n >= 0) return POSITIVE_NUMS[n];
       return NEGATIVE_NUMS[-n];
@@ -25,6 +26,8 @@ const Interpreter = (() => {
   let getFloat = (v) => {
     return { type: 'F', internalValue: v };
   };
+
+  let getBool = (v) => v ? TRUE : FALSE;
 
   let getString = (s) => {
     if (s.length <= 1) {
@@ -93,6 +96,12 @@ const Interpreter = (() => {
     let value = null;
     let value2 = null;
     let result = null;
+    let leftType = null;
+    let rightType = null;
+    let effectiveLeftType = null;
+    let effectiveRightType = null;
+    let leftValue = null;
+    let rightValue = null;
 
     let functionLookup = {};
 
@@ -169,24 +178,40 @@ const Interpreter = (() => {
         case 'OP':
           value2 = frame.values.pop();
           value = frame.values.pop();
-          switch (value.type + instruction.opop + value2.type) {
-            case "I➕I": result = getInt(value.internalValue + value2.internalValue); break;
-            case "I➕F": result = getFloat(value.internalValue + value2.internalValue); break;
-            case "F➕I": result = getFloat(value.internalValue + value2.internalValue); break;
-            case "F➕F": result = getFloat(value.internalValue + value2.internalValue); break;
-            case "I➖I": result = getInt(value.internalValue - value2.internalValue); break;
-            case "I➖F": result = getFloat(value.internalValue - value2.internalValue); break;
-            case "F➖I": result = getFloat(value.internalValue - value2.internalValue); break;
-            case "F➖F": result = getFloat(value.internalValue - value2.internalValue); break;
-            case "I✖I": result = getInt(value.internalValue * value2.internalValue); break;
-            case "I✖F": result = getFloat(value.internalValue * value2.internalValue); break;
-            case "F✖I": result = getFloat(value.internalValue * value2.internalValue); break;
-            case "F✖F": result = getFloat(value.internalValue * value2.internalValue); break;
-            case "I➗I": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getInt(Math.floor(value.internalValue / value2.internalValue)); break;
-            case "I➗F": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
-            case "F➗I": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
-            case "F➗F": if (value2.internalValue === 0) return errorResult(instruction.token, "Division by 0"); result = getFloat(value.internalValue / value2.internalValue); break;
-            default: return errorResult(instruction.token, "Operator not defined for " + value.type + instruction.opop + value2.type);
+          leftType = value.type;
+          rightType = value2.type;
+          leftValue = value.internalValue;
+          rightValue = value2.internalValue;
+          targetTypeBuilder = leftType === 'I' && rightType === 'I' ? getInt : getFloat;
+          effectiveLeftType = leftType === 'I' || leftType === 'F' ? '#' : leftType;
+          effectiveRightType = rightType === 'I' || rightType === 'F' ? '#' : rightType;
+          if (instruction.opop === "⚖" || instruction.opop === "🙃⚖") {
+            // TODO: reference types
+            let bool = value.internalValue === value2.internalValue;
+
+            if (instruction.opop === "⚖") result = bool ? TRUE : FALSE;
+            else result = bool ? FALSE : TRUE;
+
+          } else {
+
+            switch (effectiveLeftType + instruction.opop + effectiveRightType) {
+              case "#➕#": result = targetTypeBuilder(leftValue + rightValue); break;
+              case "#➖#": result = targetTypeBuilder(leftValue - rightValue); break;
+              case "#✖#": result = targetTypeBuilder(leftValue * rightValue); break;
+              case "#➗#": if (rightValue === 0) return errorResult(instruction.token, "Division by 0"); result = targetTypeBuilder(leftValue / rightValue); break;
+              case "#⚡#": result = targetTypeBuilder(leftValue ** rightValue); break;
+              case "#👇#": result = getBool(leftValue < rightValue); break;
+              case "#👆#": result = getBool(leftValue > rightValue); break;
+              case "#👇⚖#": result = getBool(leftValue <= rightValue); break;
+              case "#👆⚖#": result = getBool(leftValue >= rightValue); break;
+              default: 
+                if (instruction.opop === "➕" && (leftType === 'S' || rightType === 'S')) {
+                  result = getString(toString(leftValue) + toString(rightValue));
+                } else {
+                  return errorResult(instruction.token, "Operator not defined for " + value.type + instruction.opop + value2.type);
+                }
+                break;
+            }
           }
           frame.values.push(result);
           break;
