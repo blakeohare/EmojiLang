@@ -5,7 +5,7 @@ const IDE = (() => {
   let init = () => {
     editorUi = document.getElementById('editor');
     editorUi.value = code;
-    
+
     let applyEditorChanges = () => {
       if (editorUi.value !== code) {
         code = editorUi.value || '';
@@ -16,13 +16,8 @@ const IDE = (() => {
     editorUi.addEventListener('keydown', applyEditorChanges);
 
     document.getElementById('run-btn').addEventListener('click', () => {
-      run(editorUi.value);
+      Runner.run(code);
     });
-  };
-
-  let run = (code) => {
-    console.log("You clicked run");
-    console.log("Run this code:", code);
   };
 
   return Object.freeze({

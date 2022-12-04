@@ -1,6 +1,10 @@
 const Parser = (() => {
 
-  return Object.freeze({
+  let parse = (tokens) => {
 
+  };
+
+  return Object.freeze({
+    parse,
   });
 })();
